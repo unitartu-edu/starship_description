@@ -1,9 +1,15 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="starship">
 
+  <xacro:property name="track_width" value="0.56"/>
+  <xacro:property name="wheel_z_offset" value="0.03"/>
+  <xacro:property name="wheel_x_front" value="0.28"/>
+  <xacro:property name="wheel_x_middle" value="0.05"/>
+  <xacro:property name="wheel_x_rear" value="-0.18"/>
+  
   <link name="base_link">
     <visual>
-      <origin rpy="1.57 0 0" xyz="0 0 0"/>
+      <origin rpy="${pi/2} 0 ${pi}" xyz="0 0 0"/>
       <geometry>
         <mesh filename="package://starship_description/meshes/frame.STL" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -20,7 +26,7 @@
 
   <link name="top">
     <visual>
-      <origin rpy="1.57 0 0" xyz="0 0 0"/>
+      <origin rpy="1.57 0 ${pi}" xyz="0 0 0"/>
       <geometry>
         <mesh filename="package://starship_description/meshes/top.STL" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -35,148 +41,42 @@
     </collision>
   </link>
 
-  <link name="wheel_1">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://starship_description/meshes/wheels.STL" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="black">
-        <color rgba="0 0 0 1" />
-      </material>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://starship_description/meshes/wheels.STL" scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-  </link>
+  <xacro:macro name="wheel" params="wheel_name x reflect_y">
+  <link name="${wheel_name}">
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://starship_description/meshes/wheel.STL" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="black">
+          <color rgba="0 0 0 1" />
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://starship_description/meshes/wheel.STL" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    </link>
 
-  <link name="wheel_2">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://starship_description/meshes/wheels.STL" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="black">
-        <color rgba="0 0 0 1" />
-      </material>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://starship_description/meshes/wheels.STL" scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-  </link>
+    <joint name="base_link_to_${wheel_name}" type="fixed">
+      <parent link="base_link"/>
+      <child link="${wheel_name}"/>
+      <origin xyz="${x} ${track_width/2*reflect_y} ${wheel_z_offset}" rpy="-1.57 0 0"/>
+    </joint>
+  </xacro:macro>
 
-  <link name="wheel_3">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://starship_description/meshes/wheels.STL" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="black">
-        <color rgba="0 0 0 1" />
-      </material>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://starship_description/meshes/wheels.STL" scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="wheel_4">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://starship_description/meshes/wheels.STL" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="black">
-        <color rgba="0 0 0 1" />
-      </material>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://starship_description/meshes/wheels.STL" scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="wheel_5">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://starship_description/meshes/wheels.STL" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="black">
-        <color rgba="0 0 0 1" />
-      </material>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://starship_description/meshes/wheels.STL" scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="wheel_6">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://starship_description/meshes/wheels.STL" scale="0.001 0.001 0.001"/>
-      </geometry>
-      <material name="black">
-        <color rgba="0 0 0 1" />
-      </material>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://starship_description/meshes/wheels.STL" scale="0.001 0.001 0.001"/>
-      </geometry>
-    </collision>
-  </link>
+  <xacro:wheel wheel_name="wheel_left_front" x="${wheel_x_front}" reflect_y="1"/>
+  <xacro:wheel wheel_name="wheel_left_middle" x="${wheel_x_middle}" reflect_y="1"/>
+  <xacro:wheel wheel_name="wheel_left_rear" x="${wheel_x_rear}" reflect_y="1"/>
+  <xacro:wheel wheel_name="wheel_right_front" x="${wheel_x_front}" reflect_y="-1"/>
+  <xacro:wheel wheel_name="wheel_right_middle" x="${wheel_x_middle}" reflect_y="-1"/>
+  <xacro:wheel wheel_name="wheel_right_rear" x="${wheel_x_rear}" reflect_y="-1"/>
 
   <joint name="base_link_to_top" type="fixed">
     <parent link="base_link"/>
     <child link="top"/>
-    <origin xyz="-0.02 -0.04 0" rpy="0 0 0"/>
-  </joint>
-
-  <joint name="base_link_to_wheel_1" type="fixed">
-    <parent link="base_link"/>
-    <child link="wheel_1"/>
-    <origin xyz="-0.028 -0.015 0.15" rpy="-1.57 0 0"/>
-  </joint>
-
-  <joint name="base_link_to_wheel_2" type="fixed">
-    <parent link="base_link"/>
-    <child link="wheel_2"/>
-    <origin xyz="0.2 -0.015 0.15" rpy="-1.57 0 0"/>
-  </joint>
-
-  <joint name="base_link_to_wheel_3" type="fixed">
-    <parent link="base_link"/>
-    <child link="wheel_3"/>
-    <origin xyz="0.43 -0.015 0.15" rpy="-1.57 0 0"/>
-  </joint>
-
-  <joint name="base_link_to_wheel_4" type="fixed">
-    <parent link="base_link"/>
-    <child link="wheel_4"/>
-    <origin xyz="-0.028 -0.565 -0.05" rpy="1.57 0 0"/>
-  </joint>
-
-  <joint name="base_link_to_wheel_5" type="fixed">
-    <parent link="base_link"/>
-    <child link="wheel_5"/>
-    <origin xyz="0.2 -0.565 -0.05" rpy="1.57 0 0"/>
-  </joint>
-
-  <joint name="base_link_to_wheel_6" type="fixed">
-    <parent link="base_link"/>
-    <child link="wheel_6"/>
-    <origin xyz="0.43 -0.565 -0.05" rpy="1.57 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
 </robot>
